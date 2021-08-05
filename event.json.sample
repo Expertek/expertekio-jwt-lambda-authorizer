@@ -8,7 +8,7 @@
   "rawQueryString": "parameter1=value1&parameter1=value2&parameter2=value",
   "cookies": ["cookie1", "cookie2"],
   "headers": {
-    "authorization": "BEARER ACCESS_TOKEN",
+    "authorization": "Bearer ACCESS_TOKEN",
     "Header2": "value2"
   },
   "queryStringParameters": {
