@@ -42,12 +42,22 @@ module.exports.authenticate = (event) => {
     const signingKey = key.publicKey || key.rsaPublicKey;
     return jwt.verify(token, signingKey, jwtOptions);
   })
-  .then((decoded) => ({
-    isAuthorized: true,
-    context: { 
-      jwt: decoded
+  .then((decoded) => {
+    for (const pkg of decoded.pks) {
+      if (pkg === process.env.PACKAGE) {
+        return {
+          isAuthorized: true,
+          context: {
+            jwt: decoded
+          }
+        }
+      }
     }
-  }));
+    return {
+      isAuthorized: false,
+      context: {}
+    }
+  });
 }
 
 const client = jwksClient({

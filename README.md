@@ -10,13 +10,14 @@ that the [bearer token](https://tools.ietf.org/html/rfc6750) is a JWT that can b
 This project is based on [https://github.com/auth0-samples/jwt-rsa-aws-custom-authorizer](https://github.com/auth0-samples/jwt-rsa-aws-custom-authorizer), which is
 itself a fork of [https://github.com/jghaines/lambda-auth0-authorizer](https://github.com/jghaines/lambda-auth0-authorizer).
 
-The difference between the two projects is that the JWKS endpoint is set in `.env` to the keys.expertek.io endpoint, the full decoded claims and token are returned
-in the response context, and the issuer and audience claims are not verified by default. The claims are intended to be used by the endpoint, and the token may be
-used to further call back to expertek.io services.
+The difference between the two projects is that the JWKS endpoint is set in `.env` to the keys.expertek.io endpoint, the full decoded claims are returned in the response
+context, the "package access" claim is verified instead of the audience field, and the issuer claim is not verified by default.
 
-Note the last point in the above: the _issuer and audience claims are not verified_. The audience claim is not used at present in expertek.io JWT's, and the issuer
-will vary depending on the domain of the issuer instance. If you intend to limit access to a single issuer (say your own single-tenant instance of the software),
-you can set that in `.env`.
+You need to set the PACKAGE value in the `.env` file (or environment variable in production) to the fully qualified package ID of your API. The package access array will
+be searched for the matching value, and the call is authorized only if the package ID is found. If not, a 403 will be returned.
+
+Note also the last point in the above: the _issuer is not verified_. The issuer will vary depending on the domain of the issuer instance. If you intend to limit access to
+a single issuer (say your own single-tenant instance of the software), you can set that in `.env`.
 
 ### What is AWS API Gateway?
 
@@ -122,7 +123,8 @@ This will generate a local `expertekio-jwt-authorizer.zip` bundle (ZIP file) con
 
 For the latest instructions on deployment, refer to the [AWS documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html).
 
-*Note:* you will need to set the `JWKS_URI` environment variable in your Lambda function configuration to `https://keys.expertek.io/.well-known/jwks.json`.
+*Note:* you will need to set the `JWKS_URI` environment variable in your Lambda function configuration to `https://keys.expertek.io/.well-known/jwks.json`, and the `PACKAGE`
+environment variable to your API's fully qualified package ID.
 
 ## License
 
