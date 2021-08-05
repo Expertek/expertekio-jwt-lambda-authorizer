@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "lambda-local --timeout 300 --lambda-path index.js --event-path event.json",
-    "bundle": "rm -f expertekio-jwt-authorizer.zip ; zip expertekio-jwt-authorizer.zip -r *.js *.json node_modules/"
+    "bundle": "rm -f expertekio-jwt-authorizer.zip ; zip expertekio-jwt-authorizer.zip -r *.js node_modules/"
   },
   "author": "Andrew Mostello",
   "license": "Apache-2.0",
