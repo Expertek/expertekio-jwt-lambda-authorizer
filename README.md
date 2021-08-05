@@ -75,38 +75,34 @@ This uses the [lambda-local](https://www.npmjs.com/package/lambda-local) package
 ```
 > lambda-local --timeout 300 --lambdapath index.js --eventpath event.json
 
-Logs
-----
-START RequestId: fe210d1c-12de-0bff-dd0a-c3ac3e959520
-{ type: 'TOKEN',
-    authorizationToken: 'Bearer eyJ0eXA...M2pdKi79742x4xtkLm6qNSdDYDEub37AI2h_86ifdIimY4dAOQ',
-    methodArn: 'arn:aws:execute-api:us-east-1:1234567890:apiId/stage/method/resourcePath' }
-END
-
-
-Message
-------
-{
-    "principalId": "user_id",
-    "policyDocument": {
-        "Version": "2012-10-17",
-        "Statement": [
-            {
-                "Sid": "Stmt1459758003000",
-                "Effect": "Allow",
-                "Action": [
-                    "execute-api:Invoke"
-                ],
-                "Resource": [
-                    "arn:aws:execute-api:*"
-                ]
-            }
-        ]
+info: START RequestId: fe210d1c-12de-0bff-dd0a-c3ac3e959520
+info: End - Result:
+info: {
+   "isAuthorized": true,
+    "context": {
+        "jwt": {
+            "exp": 1628132045,
+            "jti": "5b92307bb4ea5f7f4667d42d5187a212",
+            "iat": 1628131925,
+            "iss": "https://keys.expertek.io",
+            "aid": "expertek",
+            "tid": "expertek-tst",
+            "cno": 1000,
+            "opr": "AM01",
+            "pid": "expertek/identitydemo",
+            "cos": [
+                1000,
+                9000,
+            ],
+            "pks": [
+                "expertek/identitydemo"
+            ],
+            "src": "proxy",
+            "api": "/api"
+        }
     }
 }
 ```
-
-An `Action` of `Allow` means the authorizer would have allowed the associated API call to the API Gateway if it contained your token.
 
 ## Deployment
 
@@ -125,6 +121,8 @@ This will generate a local `expertekio-jwt-authorizer.zip` bundle (ZIP file) con
 ### Deploy the Lambda authorizer
 
 For the latest instructions on deployment, refer to the [AWS documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html).
+
+*Note:* you will need to set the `JWKS_URI` environment variable in your Lambda function configuration to `https://keys.expertek.io/.well-known/jwks.json`.
 
 ## License
 
