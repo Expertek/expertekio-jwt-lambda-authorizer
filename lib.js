@@ -4,28 +4,15 @@ const jwksClient = require('jwks-rsa');
 const jwt = require('jsonwebtoken');
 const util = require('util');
 
-const getPolicyDocument = (effect, resource) => {
-  const policyDocument = {
-    Version: '2012-10-17', // default version
-    Statement: [{
-      Action: 'execute-api:Invoke', // default action
-      Effect: effect,
-      Resource: resource,
-    }]
-  };
-  return policyDocument;
-}
-
-
 // extract and return the Bearer Token from the Lambda event parameters
-const getToken = (params) => {
-  if (!params.type || params.type !== 'TOKEN') {
-    throw new Error('Expected "event.type" parameter to have value "TOKEN"');
+const getToken = (event) => {
+  if (!event.type || event.type !== 'REQUEST') {
+    throw new Error('Expected "event.type" parameter to have value "REQUEST"');
   }
   
-  const tokenString = params.authorizationToken;
+  const tokenString = event.headers.authorization;
   if (!tokenString) {
-    throw new Error('Expected "event.authorizationToken" parameter to be set');
+    throw new Error('Expected "event.headers.authorization" parameter to be set');
   }
   
   const match = tokenString.match(/^Bearer (.*)$/);
@@ -35,14 +22,13 @@ const getToken = (params) => {
   return match[1];
 }
 
-module.exports.authenticate = (params) => {
-  const token = getToken(params);
+module.exports.authenticate = (event) => {
+  const token = getToken(event);
   
   const decoded = jwt.decode(token, { complete: true });
   if (!decoded || !decoded.header || !decoded.header.kid) {
     throw new Error('invalid token');
   }
-
 
   const jwtOptions = {};
   const issuer = process.env.TOKEN_ISSUER
@@ -56,12 +42,10 @@ module.exports.authenticate = (params) => {
     const signingKey = key.publicKey || key.rsaPublicKey;
     return jwt.verify(token, signingKey, jwtOptions);
   })
-  .then((decoded)=> ({
-    principalId: decoded.sub,
-    policyDocument: getPolicyDocument('Allow', params.methodArn),
+  .then((decoded) => ({
+    isAuthorized: true,
     context: { 
-      jwt: decoded,
-      token: token
+      jwt: decoded
     }
   }));
 }
