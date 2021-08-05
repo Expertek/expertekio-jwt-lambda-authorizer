@@ -1,0 +1,20 @@
+{
+  "name": "expertekio-jwt-lambda-authorizer",
+  "version": "0.1.0",
+  "description": "API Gateway Lambda authorizer for expertek.io JWT's",
+  "main": "index.js",
+  "scripts": {
+    "test": "lambda-local --timeout 300 --lambda-path index.js --event-path event.json",
+    "bundle": "rm -f expertekio-jwt-authorizer.zip ; zip expertekio-jwt-authorizer.zip -r *.js *.json node_modules/"
+  },
+  "author": "Andrew Mostello",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "jwks-rsa": "^2.0.4"
+  },
+  "devDependencies": {
+    "lambda-local": "^2.0.0"
+  }
+}
